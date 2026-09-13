@@ -16,6 +16,7 @@
   function makeIsBg(kind, bg) {
     switch (kind) {
       case "white": return (r, g, b) => r >= 235 && g >= 235 && b >= 235;
+      case "black": return (r, g, b) => r <= 20 && g <= 20 && b <= 20;
       case "blue":  return (r, g, b) => b >= r && b >= g && (r + g + b) < 720 && Math.max(r, g, b) >= 40;
       case "custom":{ const [tr, tg, tb] = bg, tol = 50;
         return (r, g, b) => Math.abs(r - tr) < tol && Math.abs(g - tg) < tol && Math.abs(b - tb) < tol; }
@@ -83,6 +84,8 @@
     if (uniform) {
       if (mean[0] >= 235 && mean[1] >= 235 && mean[2] >= 235)
         return { strategy: "white", bg: null, conf: 0.90, mean };
+      if (mean[0] <= 20 && mean[1] <= 20 && mean[2] <= 20)
+        return { strategy: "black", bg: null, conf: 0.90, mean };
       if (mean[2] >= mean[0] && mean[2] >= mean[1] && (mean[0] + mean[1] + mean[2]) < 720 && Math.max(...mean) >= 40)
         return { strategy: "blue", bg: null, conf: 0.85, mean };
       return { strategy: "bg", bg: mean, conf: 0.80, mean };

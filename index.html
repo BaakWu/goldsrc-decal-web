@@ -36,17 +36,28 @@
   .hint { color:var(--mut); font-size:12px; margin-top:8px; }
    .badge { display:inline-block; padding:2px 8px; border-radius:20px; background:#0f1116; border:1px solid var(--line);
             font-size:11px; color:var(--mut); margin-left:8px; vertical-align:middle; }
-   .instr h3 { font-size:12px; text-transform:uppercase; letter-spacing:.03em; color:var(--mut);
-              margin:16px 0 6px; padding-bottom:5px; border-bottom:1px solid var(--line); }
-   .instr h3:first-child { margin-top:0; }
-   .instr ol { margin:0 0 4px; padding-left:20px; } .instr li { margin:2px 0; }
-   .instr p { margin:6px 0; }
+    .instr h3 { font-size:12px; text-transform:uppercase; letter-spacing:.03em; color:var(--mut);
+               margin:16px 0 6px; padding-bottom:5px; border-bottom:1px solid var(--line); }
+    .instr h3:first-child { margin-top:0; }
+    .instr ol { margin:0 0 4px; padding-left:20px; } .instr li { margin:2px 0; }
+    .instr p { margin:6px 0; }
+    .instr details { margin:16px 0 0; border-top:1px solid var(--line); padding-top:10px; }
+    .instr details > summary { cursor:pointer; list-style:none; color:var(--mut); font-size:12px;
+               text-transform:uppercase; letter-spacing:.03em; display:flex; align-items:center; gap:6px; }
+    .instr details > summary::-webkit-details-marker { display:none; }
+    .instr details > summary::before { content:"\25B8"; color:var(--mut); transition:transform .15s; }
+    .instr details[open] > summary::before { transform:rotate(90deg); }
+    .instr details .body { margin-top:10px; }
+    .instr details .body h4 { font-size:12px; color:var(--mut); text-transform:uppercase;
+               letter-spacing:.03em; margin:12px 0 4px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>GoldSrc Decal Maker <span class="badge">runs in your browser &middot; nothing is uploaded</span></h1>
-  <p class="sub">Turn any PNG / JPG / JPEG / BMP into a Half-Life 1 (GoldSrc) spray <code>tempdecal.wad</code>.</p>
+  <p class="sub">Turn any PNG / JPG / JPEG / BMP into a Half-Life 1 (GoldSrc) spray <code>tempdecal.wad</code>.<br>
+     <a href="https://github.com/BaakWu/goldsrc-decal-web" style="color:var(--acc)">github.com/BaakWu/goldsrc-decal-web</a> &middot;
+     <a href="#privacy" style="color:var(--acc)">Privacy</a> &middot; MIT License</p>
 
   <div class="card">
     <div class="drop" id="drop">
@@ -60,6 +71,7 @@
         <select id="strategy">
           <option value="auto">auto (recommended)</option>
           <option value="white">white background</option>
+          <option value="black">black background</option>
           <option value="blue">blue background</option>
           <option value="bg">custom solid background (&hellip;)</option>
           <option value="alpha">use image alpha channel</option>
@@ -131,13 +143,12 @@
        <code>tempdecal.wad</code> lets you spray <b>any</b> image you like, including full-color ones.</p>
 
     <h3>Where do I put the file?</h3>
-    <p>Copy your <code>tempdecal.wad</code> into the game's folder (the folder containing <code>hl.exe</code>).
-       By default this targets the two most common games:</p>
+    <p>Copy your <code>tempdecal.wad</code> into the folder shown for your game:</p>
     <ul>
-      <li>Sven Co-op: <code>&lt;Game Folder&gt;\svencoop</code></li>
-      <li>Half-Life: <code>&lt;Game Folder&gt;\valve</code></li>
+      <li>Sven Co-op: <code>Sven Co-op\svencoop</code></li>
+      <li>Half-Life: <code>Half-Life\valve</code></li>
+      <li>Counter-Strike 1.6: <code>Half-Life\cstrike</code></li>
     </ul>
-    <p>Counter-Strike 1.6 instead uses <code>&lt;Game Folder&gt;\cstrike</code>.</p>
     <p>To find your <b>Game Folder</b>, open Steam &rarr; <b>Library</b>, right-click the game and
        choose <b>Manage &gt; Browse local files</b>.<br>
        <b>Recommended:</b> set <code>tempdecal.wad</code> to <b>read-only</b> (right-click &rarr; Properties &rarr; check
@@ -160,6 +171,39 @@
 
     <h3>Supported image formats</h3>
     <p>PNG, JPEG, BMP &mdash; and generally any raster format your browser can load (except SVG).</p>
+
+    <h3>Project</h3>
+    <p>Repository: <a href="https://github.com/BaakWu/goldsrc-decal-web">github.com/BaakWu/goldsrc-decal-web</a><br>
+        License: <b>MIT</b> &copy; 2026 BaakWu</p>
+
+    <details id="privacy">
+      <summary>Privacy policy</summary>
+      <div class="body">
+        <p><b>Last updated: 13 September 2026.</b></p>
+        <p><b>Your files stay on your device.</b> The selected image, its filename, your settings and
+           decal name, and the generated WAD and preview are processed locally in your browser. They
+           are never uploaded or sent to the site owner, Cloudflare, or GitHub.</p>
+        <ul>
+          <li>The app sets no cookies or persistent browser storage.</li>
+          <li>The app includes no analytics, advertising, fingerprinting, or other user tracking.</li>
+          <li>Reloading or closing the page clears its working data. Files you download remain on
+              your device until you delete them.</li>
+        </ul>
+        <p><b>Cloudflare hosting.</b> The hosted site uses Cloudflare for DNS and static hosting.
+           Cloudflare automatically processes routine technical data needed to serve and protect the
+           site, which may include your IP address, request time, requested URL, browser or user-agent
+           information, and security or routing data. This does not include anything you enter into or
+           create with the converter. Cloudflare handles that data under its
+           <a href="https://www.cloudflare.com/privacypolicy">Privacy Policy</a>.</p>
+        <p>The site owner does not add to Cloudflare's collection, sell personal data, or use it for
+           advertising or profiling. Opening <code>index.html</code> locally avoids a hosted site
+           request altogether. GitHub applies its own privacy policy only if you choose to follow a
+           link to GitHub.</p>
+        <p>Questions about this policy can be submitted through the
+           <a href="https://github.com/BaakWu/goldsrc-decal-web/issues">project issue tracker</a>.
+           Issues are public, so do not include sensitive information.</p>
+      </div>
+    </details>
   </div>
 </div>
 
@@ -175,10 +219,13 @@
   ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
   ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
   drop.addEventListener("drop", e => { const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) loadFile(f); });
-  fileIn.addEventListener("change", () => loadFile(f));
+  fileIn.addEventListener("change", () => { const f = fileIn.files && fileIn.files[0]; if (f) loadFile(f); });
   $("strategy").addEventListener("change", () => { $("bgField").style.display = $("strategy").value === "bg" ? "block" : "none"; });
   $("cache").addEventListener("change", () => { $("customPxField").style.display = $("cache").value === "custom" ? "block" : "none"; });
   $("build").addEventListener("click", build);
+  const openPrivacy = () => { const el = $("privacy"); if (el) el.open = true; };
+  document.querySelectorAll('a[href="#privacy"]').forEach(a => a.addEventListener("click", openPrivacy));
+  if (location.hash === "#privacy") openPrivacy();
 
   let loaded = null;   // HTMLImageElement
 
@@ -194,8 +241,9 @@
   }
 
   function log(msg, cls) {
+    const el = $("log"); el.textContent = "";
     const d = document.createElement("div"); d.textContent = msg; if (cls) d.className = cls;
-    $("log").appendChild(d);
+    el.appendChild(d);
   }
 
   // Draw an image to a canvas at (w,h) and return ImageData (RGBA, w*h*4).
@@ -259,6 +307,7 @@
       }
       const kind = strategy === "alpha" ? "alpha"
                  : strategy === "white" ? "white"
+                 : strategy === "black" ? "black"
                  : strategy === "blue"  ? "blue"
                  : strategy === "bg"    ? "custom"
                  : "auto";
@@ -312,12 +361,23 @@
       $("pvThumb").src = pv; $("pvThumb").style.display = "block"; $("pvHint").style.display = "none";
       $("dl").href = url; $("dlpv").href = pv;
       $("result").style.display = "block";
-      $("stat").innerHTML =
-        `<div><span>name</span> ${JSON.stringify(name)}</div>` +
-        `<div><span>top mip</span> ${tw}x${th}</div>` +
-        `<div><span>palette</span> ${transparent ? "255 + 1 reserved" : "256"}</div>` +
-        `<div><span>transparent</span> ${pct}%</div>` +
-        `<div><span>strategy</span> ${strategy}${note}</div>`;
+      const statRows = [
+        ["name", name],
+        ["top mip", tw + "x" + th],
+        ["palette", transparent ? "255 + 1 reserved" : "256"],
+        ["transparent", pct + "%"],
+        ["strategy", strategy + note],
+      ];
+      const stat = $("stat");
+      stat.textContent = "";
+      for (const [k, v] of statRows) {
+        const row = document.createElement("div");
+        const label = document.createElement("span");
+        label.textContent = k;
+        row.appendChild(label);
+        row.appendChild(document.createTextNode(" " + v));
+        stat.appendChild(row);
+      }
       log(`Built tempdecal.wad (${blob.size} bytes) [strategy=${strategy}${note}]`, "ok");
     } catch (e) {
       console.error(e); log("Build failed: " + e.message, "err");
