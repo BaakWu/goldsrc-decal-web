@@ -119,8 +119,7 @@
       </div>
     </div>
     <div style="margin-top:16px">
-      <button class="btn" id="build">Build tempdecal.wad</button>
-      <a class="btn dl" id="dl" download="tempdecal.wad" style="margin-left:8px;display:none">
+      <a class="btn dl" id="dl" download="tempdecal.wad" style="display:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
         Download tempdecal.wad
       </a>
@@ -219,9 +218,9 @@
   ["dragleave","drop"].forEach(ev => dropCard.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
   dropCard.addEventListener("drop", e => { const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) loadFile(f); });
   fileIn.addEventListener("change", () => { const f = fileIn.files && fileIn.files[0]; if (f) loadFile(f); fileIn.value = ""; });
-  $("strategy").addEventListener("change", () => { $("bgField").style.display = $("strategy").value === "bg" ? "block" : "none"; });
-  $("cache").addEventListener("change", () => { $("customPxField").style.display = $("cache").value === "custom" ? "block" : "none"; });
-  $("build").addEventListener("click", build);
+  $("strategy").addEventListener("change", () => { $("bgField").style.display = $("strategy").value === "bg" ? "block" : "none"; if (loaded) build(); });
+  $("cache").addEventListener("change", () => { $("customPxField").style.display = $("cache").value === "custom" ? "block" : "none"; if (loaded) build(); });
+  ["bg", "name", "maxpx"].forEach(id => $(id).addEventListener("change", () => { if (loaded) build(); }));
   const openPrivacy = () => { const el = $("privacy"); if (el) el.open = true; };
   document.querySelectorAll('a[href="#privacy"]').forEach(a => a.addEventListener("click", openPrivacy));
   if (location.hash === "#privacy") openPrivacy();
@@ -235,7 +234,6 @@
       $("srcThumb").src = url; $("srcThumb").style.display = "block"; $("srcHint").style.display = "none";
       $("swapHint").style.display = "block";
       $("drop").style.display = "none";
-      $("build").disabled = false;
       log(`Loaded ${file.name}  (${im.naturalWidth}x${im.naturalHeight})`, "ok");
       build(); };
     im.onerror = () => log("Could not load that file as an image.", "err");
@@ -283,7 +281,7 @@
   // ------------------------------------------------------------ build
   async function build() {
     if (!loaded) return;
-    $("build").disabled = true; $("dl").style.display = "none";
+    $("dl").style.display = "none";
     const strategySel = $("strategy").value;
     let name = $("name").value || "{tempdecal";
     const cacheSel = $("cache");
@@ -374,7 +372,7 @@
       log(`Built tempdecal.wad  ${statRows}`, "ok");
     } catch (e) {
       console.error(e); log("Build failed: " + e.message, "err");
-    } finally { $("build").disabled = false; }
+    }
   }
 })();
 </script>
