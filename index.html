@@ -18,13 +18,14 @@
   .field { min-width:150px; flex:1; }
   select, input[type=text] { width:100%; background:#0f1116; color:var(--fg);
         border:1px solid var(--line); border-radius:8px; padding:9px 10px; font-size:14px; }
-  .drop { border:2px dashed #3a4152; border-radius:10px; padding:22px; text-align:center;
-        color:var(--mut); cursor:pointer; transition:.15s; }
+  .drop { border:2px dashed #3a4152; border-radius:10px; padding:34px 22px; text-align:center;
+         color:var(--mut); cursor:pointer; transition:.15s; font-size:16px; }
   .drop.over { border-color:var(--acc); background:#16202c; }
-  .drop b { color:var(--fg); }
+  .drop b { color:var(--fg); font-size:22px; }
   .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
   @media (max-width:720px){ .grid{grid-template-columns:1fr;} }
   .thumb { width:100%; border-radius:8px; border:1px solid var(--line); background:#000; display:block; }
+  #srcThumb { cursor:pointer; }
   .btn { display:inline-block; background:var(--acc); color:#04101f; border:0; border-radius:8px;
          padding:10px 16px; font-size:14px; font-weight:600; cursor:pointer; }
   .btn.ghost { background:transparent; color:var(--acc); border:1px solid var(--acc); }
@@ -60,13 +61,27 @@
      <a href="#privacy" style="color:var(--acc)">Privacy</a> &middot; MIT License</p>
 
 
-  <div class="card">
-    <div class="drop" id="drop">
-      <b>Drag &amp; drop an image here</b>, or click to choose a file
-      <div class="hint">Your image never leaves your computer &mdash; the conversion happens in your browser.</div>
+  <div class="grid">
+    <div class="card">
+      <label>Your image</label>
+      <input type="file" id="file" accept="image/png,image/jpeg,image/bmp" hidden>
+      <div class="drop" id="drop">
+        <b>Drag &amp; drop an image here</b>, or click to choose a file
+        <div class="hint">Your image never leaves your computer &mdash; the conversion happens in your browser.</div>
+      </div>
+      <img class="thumb" id="srcThumb" alt="" style="display:none">
+      <div id="srcHint" class="hint" style="display:none;margin-top:6px"></div>
+      <div class="hint" id="swapHint" style="display:none;margin-top:6px">Click the image or drop a new one to swap.</div>
     </div>
-    <input type="file" id="file" accept="image/png,image/jpeg,image/bmp" hidden>
-    <div class="row" style="margin-top:16px">
+    <div class="card">
+      <label>Cutout preview (grey squares = transparent)</label>
+      <img class="thumb" id="pvThumb" alt="" style="display:none">
+      <div id="pvHint" class="hint" style="margin-top:6px">Build to see the cutout.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
       <div class="field">
         <label>Transparency strategy</label>
         <select id="strategy">
@@ -102,35 +117,10 @@
       </div>
     </div>
     <div style="margin-top:16px">
-      <button class="btn" id="build" disabled>Build tempdecal.wad</button>
+      <button class="btn" id="build">Build tempdecal.wad</button>
+      <a class="btn ghost" id="dl" download="tempdecal.wad" style="margin-left:8px;display:none">Download tempdecal.wad</a>
     </div>
     <div class="log" id="log"></div>
-  </div>
-
-  <div class="grid">
-    <div class="card">
-      <label>Your image</label>
-      <img class="thumb" id="srcThumb" alt="" style="display:none">
-      <div id="srcHint" class="hint" style="margin-top:6px">Image will appear here.</div>
-    </div>
-    <div class="card">
-      <label>Cutout preview (grey squares = transparent)</label>
-      <img class="thumb" id="pvThumb" alt="" style="display:none">
-      <div id="pvHint" class="hint" style="margin-top:6px">Build to see the cutout.</div>
-    </div>
-  </div>
-
-  <div class="card" id="result" style="display:none">
-    <div class="stat" id="stat"></div>
-    <div style="margin-top:14px">
-      <a class="btn" id="dl" download="tempdecal.wad">Download tempdecal.wad</a>
-      <a class="btn ghost" id="dlpv" download="tempdecal.preview.png" style="margin-left:8px">Download preview</a>
-    </div>
-    <div class="hint" style="margin-top:12px">
-      Copy <b>tempdecal.wad</b> into
-      <b>Sven Co-op\svencoop</b> or <b>Half-Life\valve</b> (see instructions below),
-      then spray it in-game with the matching name (default <code>{tempdecal</code>).
-    </div>
   </div>
 
   <div class="card instr">
@@ -220,11 +210,15 @@
   const $ = id => document.getElementById(id);
   const drop = $("drop"), fileIn = $("file");
 
-  drop.addEventListener("click", () => fileIn.click());
-  ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
-  ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
-  drop.addEventListener("drop", e => { const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) loadFile(f); });
-  fileIn.addEventListener("change", () => { const f = fileIn.files && fileIn.files[0]; if (f) loadFile(f); });
+  const dropCard = drop.closest(".card");
+  const thumb = $("srcThumb");
+  const onPick = () => fileIn.click();
+  drop.addEventListener("click", onPick);
+  thumb.addEventListener("click", onPick);
+  ["dragenter","dragover"].forEach(ev => dropCard.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave","drop"].forEach(ev => dropCard.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+  dropCard.addEventListener("drop", e => { const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) loadFile(f); });
+  fileIn.addEventListener("change", () => { const f = fileIn.files && fileIn.files[0]; if (f) loadFile(f); fileIn.value = ""; });
   $("strategy").addEventListener("change", () => { $("bgField").style.display = $("strategy").value === "bg" ? "block" : "none"; });
   $("cache").addEventListener("change", () => { $("customPxField").style.display = $("cache").value === "custom" ? "block" : "none"; });
   $("build").addEventListener("click", build);
@@ -237,10 +231,13 @@
   function loadFile(file) {
     const url = URL.createObjectURL(file);
     const im = new Image();
-    im.onload = () => { loaded = im;
+    im.onload = async () => { loaded = im;
       $("srcThumb").src = url; $("srcThumb").style.display = "block"; $("srcHint").style.display = "none";
+      $("swapHint").style.display = "block";
+      $("drop").style.display = "none";
       $("build").disabled = false;
-      log(`Loaded ${file.name}  (${im.naturalWidth}x${im.naturalHeight})`, "ok"); };
+      log(`Loaded ${file.name}  (${im.naturalWidth}x${im.naturalHeight})`, "ok");
+      build(); };
     im.onerror = () => log("Could not load that file as an image.", "err");
     im.src = url;
   }
@@ -286,7 +283,7 @@
   // ------------------------------------------------------------ build
   async function build() {
     if (!loaded) return;
-    $("build").disabled = true; $("result").style.display = "none";
+    $("build").disabled = true; $("dl").style.display = "none";
     const strategySel = $("strategy").value;
     let name = $("name").value || "{tempdecal";
     const cacheSel = $("cache");
@@ -364,26 +361,17 @@
       const pct = transparent ? Math.round(100 * (tw * th - keepN) / (tw * th)) : 0;
 
       $("pvThumb").src = pv; $("pvThumb").style.display = "block"; $("pvHint").style.display = "none";
-      $("dl").href = url; $("dlpv").href = pv;
-      $("result").style.display = "block";
+      $("dl").href = url;
+      $("dl").style.display = "inline-block";
       const statRows = [
         ["name", name],
         ["top mip", tw + "x" + th],
         ["palette", transparent ? "255 + 1 reserved" : "256"],
         ["transparent", pct + "%"],
         ["strategy", strategy + note],
-      ];
-      const stat = $("stat");
-      stat.textContent = "";
-      for (const [k, v] of statRows) {
-        const row = document.createElement("div");
-        const label = document.createElement("span");
-        label.textContent = k;
-        row.appendChild(label);
-        row.appendChild(document.createTextNode(" " + v));
-        stat.appendChild(row);
-      }
-      log(`Built tempdecal.wad (${blob.size} bytes) [strategy=${strategy}${note}]`, "ok");
+        ["size", blob.size + " bytes"],
+      ].map(r => r.join(" ")).join("   ");
+      log(`Built tempdecal.wad  ${statRows}`, "ok");
     } catch (e) {
       console.error(e); log("Build failed: " + e.message, "err");
     } finally { $("build").disabled = false; }
