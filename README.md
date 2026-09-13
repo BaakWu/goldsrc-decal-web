@@ -5,6 +5,10 @@ Repository: [https://github.com/BaakWu/goldsrc-decal-web](https://github.com/Baa
 A **single self-contained HTML file** that turns any PNG / JPG / JPEG / BMP
 into a valid Half-Life 1 (GoldSrc) WAD3 spray (`tempdecal.wad`).
 
+<p align="center">
+  <img src="assets/demo.gif" alt="GoldSrc Decal Maker demo: drop an image, pick options, build the WAD" width="720">
+</p>
+
 - **Use it:** open [`index.html`](index.html) — the whole app is in that one file,
   needs no server, and uploads nothing (your image never leaves your computer).
 - **No server. No upload.** Everything runs in your browser via JavaScript.

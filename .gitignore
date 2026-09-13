@@ -14,3 +14,7 @@ dist/
 *.jpeg
 *.bmp
 *.webp
+
+# But keep the shipped demo GIF in version control
+!assets/
+!assets/demo.gif
