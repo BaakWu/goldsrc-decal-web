@@ -1,0 +1,16 @@
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+
+# Local scratch / tests output
+*.tmp
+node_modules/
+dist/
+
+# Keep the source image inputs out of version control
+# (already covered upstream; listed here for clarity)
+*.png
+*.jpg
+*.jpeg
+*.bmp
+*.webp

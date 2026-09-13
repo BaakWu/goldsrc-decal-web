@@ -1,0 +1,10 @@
+{
+  "name": "goldsrc-decal-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Convert any PNG/JPG/JPEG/BMP into a Half-Life 1 (GoldSrc) WAD3 spray, entirely in the browser.",
+  "scripts": {
+    "test": "node test/check_inline.js && node test/core_pipeline_test.mjs && node test/cross_wad_test.mjs"
+  }
+}

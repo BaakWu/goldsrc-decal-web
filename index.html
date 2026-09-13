@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GoldSrc Decal Maker</title>
+<style>
+  :root { --bg:#111318; --panel:#1a1d24; --line:#2b2f3a; --fg:#e6e8ec; --mut:#9aa0ad; --acc:#4ea1ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+         font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:960px; margin:0 auto; padding:24px 16px 60px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .sub { color:var(--mut); margin:0 0 20px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin-bottom:16px; }
+  .row { display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; }
+  label { display:block; color:var(--mut); font-size:12px; margin-bottom:5px; }
+  .field { min-width:150px; flex:1; }
+  select, input[type=text] { width:100%; background:#0f1116; color:var(--fg);
+        border:1px solid var(--line); border-radius:8px; padding:9px 10px; font-size:14px; }
+  .drop { border:2px dashed #3a4152; border-radius:10px; padding:22px; text-align:center;
+        color:var(--mut); cursor:pointer; transition:.15s; }
+  .drop.over { border-color:var(--acc); background:#16202c; }
+  .drop b { color:var(--fg); }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:720px){ .grid{grid-template-columns:1fr;} }
+  .thumb { width:100%; border-radius:8px; border:1px solid var(--line); background:#000; display:block; }
+  .btn { display:inline-block; background:var(--acc); color:#04101f; border:0; border-radius:8px;
+         padding:10px 16px; font-size:14px; font-weight:600; cursor:pointer; }
+  .btn.ghost { background:transparent; color:var(--acc); border:1px solid var(--acc); }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
+  .log { color:var(--mut); font-size:12px; white-space:pre-wrap; margin-top:10px; }
+  .ok { color:#7bd88a; } .err { color:#ff8585; }
+  .stat { display:flex; gap:22px; flex-wrap:wrap; margin-top:8px; }
+  .stat div { font-size:13px; } .stat span { color:var(--mut); }
+  .hint { color:var(--mut); font-size:12px; margin-top:8px; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:20px; background:#0f1116; border:1px solid var(--line);
+           font-size:11px; color:var(--mut); margin-left:8px; vertical-align:middle; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>GoldSrc Decal Maker <span class="badge">runs in your browser &middot; nothing is uploaded</span></h1>
+  <p class="sub">Turn any PNG / JPG / JPEG / BMP into a Half-Life 1 (GoldSrc) spray <code>tempdecal.wad</code>.</p>
+
+  <div class="card">
+    <div class="drop" id="drop">
+      <b>Drag &amp; drop an image here</b>, or click to choose a file
+      <div class="hint">Your image never leaves your computer &mdash; the conversion happens in your browser.</div>
+    </div>
+    <input type="file" id="file" accept="image/png,image/jpeg,image/bmp" hidden>
+    <div class="row" style="margin-top:16px">
+      <div class="field">
+        <label>Transparency strategy</label>
+        <select id="strategy">
+          <option value="auto">auto (recommended)</option>
+          <option value="white">white background</option>
+          <option value="blue">blue background</option>
+          <option value="bg">custom solid background (&hellip;)</option>
+          <option value="alpha">use image alpha channel</option>
+        </select>
+      </div>
+      <div class="field" id="bgField" style="display:none">
+        <label>Background R,G,B (0&ndash;255)</label>
+        <input type="text" id="bg" placeholder="e.g. 20,20,25">
+      </div>
+      <div class="field">
+        <label>Decal name (max 16)</label>
+        <input type="text" id="name" value="{tempdecal">
+      </div>
+      <div class="field">
+        <label>Max top-mip pixels</label>
+        <input type="text" id="maxpx" value="10752">
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn" id="build" disabled>Build tempdecal.wad</button>
+    </div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <label>Your image</label>
+      <img class="thumb" id="srcThumb" alt="" style="display:none">
+      <div id="srcHint" class="hint" style="margin-top:6px">Image will appear here.</div>
+    </div>
+    <div class="card">
+      <label>Cutout preview (grey squares = transparent)</label>
+      <img class="thumb" id="pvThumb" alt="" style="display:none">
+      <div id="pvHint" class="hint" style="margin-top:6px">Build to see the cutout.</div>
+    </div>
+  </div>
+
+  <div class="card" id="result" style="display:none">
+    <div class="stat" id="stat"></div>
+    <div style="margin-top:14px">
+      <a class="btn" id="dl" download="tempdecal.wad">Download tempdecal.wad</a>
+      <a class="btn ghost" id="dlpv" download="tempdecal.preview.png" style="margin-left:8px">Download preview</a>
+    </div>
+    <div class="hint" style="margin-top:12px">
+      Copy <b>tempdecal.wad</b> into <b>Half-Life\valve\decals\</b> inside your game folder,
+      then spray it in-game with the matching name (default <code>{tempdecal</code>).
+    </div>
+  </div>
+</div>
+
+<script src="decal-core.js"></script>
+<script>
+"use strict";
+(function () {
+  const C = self.Core;
+  const $ = id => document.getElementById(id);
+  const drop = $("drop"), fileIn = $("file");
+
+  drop.addEventListener("click", () => fileIn.click());
+  ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", e => { const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) loadFile(f); });
+  fileIn.addEventListener("change", () => { if (fileIn.files[0]) loadFile(fileIn.files[0]); });
+  $("strategy").addEventListener("change", () => { $("bgField").style.display = $("strategy").value === "bg" ? "block" : "none"; });
+  $("build").addEventListener("click", build);
+
+  let loaded = null;   // HTMLImageElement
+
+  function loadFile(file) {
+    const url = URL.createObjectURL(file);
+    const im = new Image();
+    im.onload = () => { loaded = im;
+      $("srcThumb").src = url; $("srcThumb").style.display = "block"; $("srcHint").style.display = "none";
+      $("build").disabled = false;
+      log(`Loaded ${file.name}  (${im.naturalWidth}x${im.naturalHeight})`, "ok"); };
+    im.onerror = () => log("Could not load that file as an image.", "err");
+    im.src = url;
+  }
+
+  function log(msg, cls) {
+    const d = document.createElement("div"); d.textContent = msg; if (cls) d.className = cls;
+    $("log").appendChild(d);
+  }
+
+  // Draw an image to a canvas at (w,h) and return ImageData (RGBA, w*h*4).
+  function toImageData(src, w, h) {
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    const ctx = c.getContext("2d", { willReadFrequently: true });
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(src, 0, 0, w, h);
+    return ctx.getImageData(0, 0, w, h);
+  }
+
+  // ------------------------------------------------------------ checkerboard preview
+  function makePreview(id, keep, scale, cell) {
+    const w = id.width, h = id.height;
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    const ctx = c.getContext("2d");
+    for (let y = 0; y < h; y++)
+      for (let x = 0; x < w; x++) {
+        ctx.fillStyle = (((x + y) / cell | 0) & 1) ? "#c8c8c8" : "#606060";
+        ctx.fillRect(x, y, 1, 1);
+      }
+    for (let p = 0; p < keep.length; p++) {
+      if (!keep[p]) continue;
+      const x = p % w, y = (p / w) | 0, i = p * 4;
+      ctx.fillStyle = `rgb(${id.data[i]},${id.data[i + 1]},${id.data[i + 2]})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+    const out = document.createElement("canvas");
+    out.width = Math.max(2, Math.round(w * scale)); out.height = Math.max(2, Math.round(h * scale));
+    const octx = out.getContext("2d"); octx.imageSmoothingEnabled = false;
+    octx.drawImage(c, 0, 0, out.width, out.height);
+    return out.toDataURL("image/png");
+  }
+
+  // ------------------------------------------------------------ build
+  async function build() {
+    if (!loaded) return;
+    $("build").disabled = true; $("result").style.display = "none";
+    const strategySel = $("strategy").value;
+    let name = $("name").value || "{tempdecal";
+    const maxpx = Math.max(256, parseInt($("maxpx").value, 10) || 10752);
+    let bg = null;
+    if (strategySel === "bg") {
+      const parts = ($("bg").value || "20,20,25").split(",").map(s => parseInt(s, 10));
+      if (parts.length === 3 && parts.every(x => x >= 0 && x < 256)) bg = parts;
+      else { log("Invalid R,G,B -- falling back to white.", "err"); strategySel = "white"; }
+    }
+    const transparent = name[0] === "{";
+    try {
+      const ow = loaded.naturalWidth, oh = loaded.naturalHeight;
+      const origId = toImageData(loaded, ow, oh);
+
+      let strategy = strategySel, note = "";
+      if (strategy === "auto") {
+        const rec = C.recommend(origId);
+        strategy = rec.strategy;
+        note = ` (auto -> ${strategy}, conf ${rec.conf.toFixed(2)})`;
+        if (rec.bg) bg = rec.bg;
+      }
+      const kind = strategy === "alpha" ? "alpha"
+                 : strategy === "white" ? "white"
+                 : strategy === "blue"  ? "blue"
+                 : strategy === "bg"    ? "custom"
+                 : "auto";
+
+      const [tw, th] = C.pickSize(ow, oh, maxpx);
+      const topId = toImageData(loaded, tw, th);
+      let keepTop;
+      if (transparent)
+        keepTop = (kind === "alpha") ? C.alphaMask(topId) : C.backgroundMask(topId, kind, bg);
+      else
+        keepTop = new Uint8Array(tw * th).fill(1);
+
+      const colors = [];
+      for (let p = 0; p < keepTop.length; p++) if (keepTop[p])
+        colors.push([topId.data[p * 4], topId.data[p * 4 + 1], topId.data[p * 4 + 2]]);
+      const uniq = Array.from(new Set(colors.map(c => c.join(",")))).map(s => s.split(",").map(Number));
+      const target = transparent ? 255 : Math.min(256, Math.max(1, uniq.length));
+      let real = uniq.length > target ? C.medianCut(colors, target) : uniq.slice(0, target);
+      let dedupe = Array.from(new Set(real.map(c => c.join(",")))).map(s => s.split(",").map(Number)).slice(0, target);
+
+      let palette;
+      if (transparent) { while (dedupe.length < 255) dedupe.push([0,0,0]); palette = dedupe.concat([[0,0,255]]); }
+      else             { while (dedupe.length < 256) dedupe.push([0,0,0]); palette = dedupe; }
+      const lookup = new Map(dedupe.map((c, i) => [c.join(","), i]));
+
+      const mips = [];
+      for (let m = 0; m < 4; m++) {
+        const mw = tw >> m, mh = th >> m;
+        const mid = toImageData(loaded, mw, mh);
+        let keeps;
+        if (transparent)
+          keeps = (kind === "alpha") ? C.alphaMask(mid) : C.backgroundMask(mid, kind, bg);
+        else keeps = new Uint8Array(mw * mh).fill(1);
+        const idx = new Uint8Array(mw * mh);
+        for (let p = 0; p < idx.length; p++) {
+          if (!keeps[p]) { idx[p] = 255; continue; }
+          const i = p * 4, c = [mid.data[i], mid.data[i + 1], mid.data[i + 2]];
+          idx[p] = lookup.has(c.join(",")) ? lookup.get(c.join(",")) : C.nearest(dedupe, c);
+        }
+        mips.push(idx);
+      }
+
+      const wadBuf = C.buildWad(name, tw, th, mips, palette);
+      const blob = new Blob([wadBuf], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const pv = makePreview(topId, keepTop, 2.0, 6);
+
+      let keepN = 0; for (let i = 0; i < keepTop.length; i++) if (keepTop[i]) keepN++;
+      const pct = transparent ? Math.round(100 * (tw * th - keepN) / (tw * th)) : 0;
+
+      $("pvThumb").src = pv; $("pvThumb").style.display = "block"; $("pvHint").style.display = "none";
+      $("dl").href = url; $("dlpv").href = pv;
+      $("result").style.display = "block";
+      $("stat").innerHTML =
+        `<div><span>name</span> ${JSON.stringify(name)}</div>` +
+        `<div><span>top mip</span> ${tw}x${th}</div>` +
+        `<div><span>palette</span> ${transparent ? "255 + 1 reserved" : "256"}</div>` +
+        `<div><span>transparent</span> ${pct}%</div>` +
+        `<div><span>strategy</span> ${strategy}${note}</div>`;
+      log(`Built tempdecal.wad (${blob.size} bytes) [strategy=${strategy}${note}]`, "ok");
+    } catch (e) {
+      console.error(e); log("Build failed: " + e.message, "err");
+    } finally { $("build").disabled = false; }
+  }
+})();
+</script>
+</body>
+</html>
