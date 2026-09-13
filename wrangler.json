@@ -1,0 +1,20 @@
+{
+  "name": "goldsrc-decal-web",
+  "compatibility_date": "2026-09-13",
+  "assets": {
+    "directory": ".",
+    "exclude": [
+      ".git/**",
+      ".github/**",
+      ".gitignore",
+      "node_modules/**",
+      "test/**",
+      "package.json",
+      "package-lock.json",
+      "wrangler.json",
+      "wrangler.toml",
+      "README.md",
+      "LICENSE"
+    ]
+  }
+}
