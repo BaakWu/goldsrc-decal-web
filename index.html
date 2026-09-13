@@ -34,8 +34,13 @@
   .stat { display:flex; gap:22px; flex-wrap:wrap; margin-top:8px; }
   .stat div { font-size:13px; } .stat span { color:var(--mut); }
   .hint { color:var(--mut); font-size:12px; margin-top:8px; }
-  .badge { display:inline-block; padding:2px 8px; border-radius:20px; background:#0f1116; border:1px solid var(--line);
-           font-size:11px; color:var(--mut); margin-left:8px; vertical-align:middle; }
+   .badge { display:inline-block; padding:2px 8px; border-radius:20px; background:#0f1116; border:1px solid var(--line);
+            font-size:11px; color:var(--mut); margin-left:8px; vertical-align:middle; }
+   .instr h3 { font-size:12px; text-transform:uppercase; letter-spacing:.03em; color:var(--mut);
+              margin:16px 0 6px; padding-bottom:5px; border-bottom:1px solid var(--line); }
+   .instr h3:first-child { margin-top:0; }
+   .instr ol { margin:0 0 4px; padding-left:20px; } .instr li { margin:2px 0; }
+   .instr p { margin:6px 0; }
 </style>
 </head>
 <body>
@@ -69,8 +74,18 @@
         <input type="text" id="name" value="{tempdecal">
       </div>
       <div class="field">
+        <label>Decal memory budget</label>
+        <select id="cache">
+          <option value="2048" data-maxpx="2048">2 MB cache (Sven Co-op)</option>
+          <option value="4096" data-maxpx="4096" selected>4 MB cache (Sven Co-op)</option>
+          <option value="16384" data-maxpx="16384">16 MB cache (Sven Co-op)</option>
+          <option value="10752" data-maxpx="10752">HL 1.1 / CS 1.6 (8 MB)</option>
+          <option value="custom" data-maxpx="">Custom (pixels)&hellip;</option>
+        </select>
+      </div>
+      <div class="field" id="customPxField" style="display:none">
         <label>Max top-mip pixels</label>
-        <input type="text" id="maxpx" value="10752">
+        <input type="text" id="maxpx" value="6000">
       </div>
     </div>
     <div style="margin-top:16px">
@@ -99,9 +114,52 @@
       <a class="btn ghost" id="dlpv" download="tempdecal.preview.png" style="margin-left:8px">Download preview</a>
     </div>
     <div class="hint" style="margin-top:12px">
-      Copy <b>tempdecal.wad</b> into <b>Half-Life\valve\decals\</b> inside your game folder,
+      Copy <b>tempdecal.wad</b> into
+      <b>Sven Co-op\svencoop</b> or <b>Half-Life\valve</b> (see instructions below),
       then spray it in-game with the matching name (default <code>{tempdecal</code>).
     </div>
+  </div>
+
+  <div class="card instr">
+    <h3>How it works</h3>
+    <p>Everything runs in your browser &mdash; your image is never uploaded. The tool builds the
+       <code>tempdecal.wad</code> and a preview, and you download the file to your computer.</p>
+
+    <h3>What is tempdecal.wad?</h3>
+    <p>A custom spray (decal) format used by GoldSrc games &mdash; Half-Life, Counter-Strike 1.6,
+       and Sven Co-op. By default these games ship only a few preset sprays; a
+       <code>tempdecal.wad</code> lets you spray <b>any</b> image you like, including full-color ones.</p>
+
+    <h3>Where do I put the file?</h3>
+    <p>Copy your <code>tempdecal.wad</code> into the game's folder (the folder containing <code>hl.exe</code>).
+       By default this targets the two most common games:</p>
+    <ul>
+      <li>Sven Co-op: <code>&lt;Game Folder&gt;\svencoop</code></li>
+      <li>Half-Life: <code>&lt;Game Folder&gt;\valve</code></li>
+    </ul>
+    <p>Counter-Strike 1.6 instead uses <code>&lt;Game Folder&gt;\cstrike</code>.</p>
+    <p>To find your <b>Game Folder</b>, open Steam &rarr; <b>Library</b>, right-click the game and
+       choose <b>Manage &gt; Browse local files</b>.<br>
+       <b>Recommended:</b> set <code>tempdecal.wad</code> to <b>read-only</b> (right-click &rarr; Properties &rarr; check
+       <i>Read-only</i>) so the game can't overwrite your custom spray with a default one.</p>
+
+    <h3>Sven Co-op</h3>
+    <p>Enable custom sprays: launch the game &rarr; <b>Options</b> &rarr; <b>Multiplayer</b> &rarr; <b>Advanced...</b>,
+       then under <b>Graphics</b> set <b>Custom player sprays</b> to <b>Enabled</b>.</p>
+    <p>Pick a <b>Decal memory budget</b> that matches your Sven Co-op texture cache:</p>
+    <ul>
+      <li><b>2 MB cache</b> &mdash; tightest fit, guaranteed to load on the smallest budget</li>
+      <li><b>4 MB cache</b> &mdash; balanced (recommended default)</li>
+      <li><b>16 MB cache</b> &mdash; crispest detail, needs the larger cache enabled</li>
+    </ul>
+
+    <h3>Pixel-art sprays</h3>
+    <p>To keep pixel art sharp instead of blurry, run this in the in-game console:<br>
+       <code>gl_texturemode GL_NEAREST_MIPMAP_LINEAR</code><br>
+       (This tool also resamples with point sampling when the image has hard edges, which favors crispness.)</p>
+
+    <h3>Supported image formats</h3>
+    <p>PNG, JPEG, BMP &mdash; and generally any raster format your browser can load (except SVG).</p>
   </div>
 </div>
 
@@ -114,11 +172,12 @@
   const drop = $("drop"), fileIn = $("file");
 
   drop.addEventListener("click", () => fileIn.click());
-  ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
-  ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+  ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
   drop.addEventListener("drop", e => { const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) loadFile(f); });
-  fileIn.addEventListener("change", () => { if (fileIn.files[0]) loadFile(fileIn.files[0]); });
+  fileIn.addEventListener("change", () => loadFile(f));
   $("strategy").addEventListener("change", () => { $("bgField").style.display = $("strategy").value === "bg" ? "block" : "none"; });
+  $("cache").addEventListener("change", () => { $("customPxField").style.display = $("cache").value === "custom" ? "block" : "none"; });
   $("build").addEventListener("click", build);
 
   let loaded = null;   // HTMLImageElement
@@ -177,7 +236,9 @@
     $("build").disabled = true; $("result").style.display = "none";
     const strategySel = $("strategy").value;
     let name = $("name").value || "{tempdecal";
-    const maxpx = Math.max(256, parseInt($("maxpx").value, 10) || 10752);
+    const cacheSel = $("cache");
+    const pxText = cacheSel.value === "custom" ? $("maxpx").value : cacheSel.selectedOptions[0].dataset.maxpx;
+    const maxpx = Math.max(256, parseInt(pxText, 10) || 10752);
     let bg = null;
     if (strategySel === "bg") {
       const parts = ($("bg").value || "20,20,25").split(",").map(s => parseInt(s, 10));
