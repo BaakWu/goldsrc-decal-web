@@ -1,0 +1,32 @@
+[h2]How to use the site[/h2]
+
+[u]1.[/u] Go to [url=https://goldsrcspraymaker.com/]goldsrcspraymaker.com[/url].
+
+[u]2.[/u] Drop an image (PNG / JPG / BMP) into the [b]Your image[/b] box. The WAD is built automatically.
+
+[u]3.[/u] Adjust the options if needed (transparency strategy, decal name, memory budget) and click [b]Build tempdecal.wad[/b] to rebuild.
+
+[u]4.[/u] Click [b]Download tempdecal.wad[/b].
+
+[u]5.[/u] Copy the file into:
+[list]
+[*][i]Sven Co-op:[/i] Sven Co-op\svencoop
+[*][i]Half-Life:[/i] Half-Life\valve
+[*][i]Counter-Strike 1.6:[/i] Half-Life\cstrike
+[/list]
+[b]Recommended:[/b] right-click [i]tempdecal.wad[/i] → Properties → check [b]Read-only[/b], so the game can't overwrite it.
+
+[u]6.[/u] Use the spray in-game.
+
+[hr]
+
+[h3]Sven Co-op[/h3]
+[b]1.[/b] Enable custom sprays: launch the game → [b]Options[/b] → [b]Multiplayer[/b] → [b]Advanced...[/b], then under [b]Graphics[/b] set [b]Custom player sprays[/b] to [b]Enabled[/b].
+
+[b]2.[/b] Match your [b]Decal memory budget[/b] to the game's texture cache (pick the budget on the site before building):
+[list]
+[*][b]2 MB cache[/b] — tightest fit, guaranteed to load on the smallest budget
+[*][b]4 MB cache[/b] — lighter budget
+[*][b]8 MB cache[/b] — recommended, works on Sven Co-op
+[*][b]16 MB cache[/b] — largest, only if your game supports it
+[/list]
