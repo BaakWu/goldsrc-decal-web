@@ -29,6 +29,8 @@
   .btn { display:inline-block; background:var(--acc); color:#04101f; border:0; border-radius:8px;
          padding:10px 16px; font-size:14px; font-weight:600; cursor:pointer; }
   .btn.ghost { background:transparent; color:var(--acc); border:1px solid var(--acc); }
+  .btn.dl { background:#22a455; color:#fff; display:inline-flex; align-items:center; gap:7px; }
+  .btn.dl svg { width:16px; height:16px; flex:0 0 auto; }
   .btn:disabled { opacity:.45; cursor:not-allowed; }
   .log { color:var(--mut); font-size:12px; white-space:pre-wrap; margin-top:10px; }
   .ok { color:#7bd88a; } .err { color:#ff8585; }
@@ -118,7 +120,10 @@
     </div>
     <div style="margin-top:16px">
       <button class="btn" id="build">Build tempdecal.wad</button>
-      <a class="btn ghost" id="dl" download="tempdecal.wad" style="margin-left:8px;display:none">Download tempdecal.wad</a>
+      <a class="btn dl" id="dl" download="tempdecal.wad" style="margin-left:8px;display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>
+        Download tempdecal.wad
+      </a>
     </div>
     <div class="log" id="log"></div>
   </div>
@@ -158,11 +163,6 @@
       <li><b>8 MB cache</b> &mdash; recommended; works on Sven Co-op</li>
       <li><b>16 MB cache</b> &mdash; largest, only if your game supports it</li>
     </ul>
-
-    <h3>Pixel-art sprays</h3>
-    <p>To keep pixel art sharp instead of blurry, run this in the in-game console:<br>
-       <code>gl_texturemode GL_NEAREST_MIPMAP_LINEAR</code><br>
-       (This tool also resamples with point sampling when the image has hard edges, which favors crispness.)</p>
 
     <h3>Supported image formats</h3>
     <p>PNG, JPEG, BMP &mdash; and generally any raster format your browser can load (except SVG).</p>
