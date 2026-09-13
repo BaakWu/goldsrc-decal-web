@@ -54,22 +54,6 @@ cross-language WAD byte comparison (`test/`).
 See [`index.html`](index.html) for the full pipeline and the layout the writer
 enforces, and [`decal-core.js`](decal-core.js) for the DOM-free core.
 
-## Privacy
-
-**Image conversion stays on your device.** The tool runs entirely in the browser:
-
-- Your image is read via local file access only (a local blob URL); it is never uploaded.
-- The app code sets no cookies or persistent browser storage and embeds no analytics,
-  advertising, tracking, third-party scripts, or CDN assets.
-- `tempdecal.wad` and the preview PNG are generated locally and only leave your
-  machine when you click the download buttons.
-- The decal name you type is used only to name the output file; it is never stored or sent.
-- Opening the hosted copy sends routine technical connection data, such as your IP address
-  and HTTP headers, to Cloudflare for DNS and static hosting. This never includes your image,
-  settings, decal name, or generated files. Opening the page locally needs no server.
-
-See the complete, dated [Privacy Policy](index.html#privacy) for the Cloudflare disclosure.
-
 ## License
 
 Released under the [MIT License](LICENSE). Copyright © 2026 BaakWu.
