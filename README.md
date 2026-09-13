@@ -10,7 +10,7 @@ into a valid Half-Life 1 (GoldSrc) WAD3 spray (`tempdecal.wad`).
 - **No server. No upload.** Everything runs in your browser via JavaScript.
 - Open `index.html` (double-click) or serve it with any static server.
 - Drag an image onto the drop zone, choose a strategy (or leave it on **auto**),
-  pick a decal memory budget (2 MB / 4 MB / 16 MB cache presets or custom pixels),
+   pick a decal memory budget (2 MB / 4 MB / 8 MB / 16 MB cache presets or custom pixels),
   click **Build** and download the resulting `tempdecal.wad` + a checkerboard
   preview PNG.
 
@@ -20,7 +20,7 @@ into a valid Half-Life 1 (GoldSrc) WAD3 spray (`tempdecal.wad`).
 - Median-cut 256-color palette, reserved index `255` as the transparency slot.
 - 4-level mip chain at sizes that are multiples of 16.
 - Decal size budgeted to match your game's texture cache
-  (Sven Co-op 2 MB / 4 MB / 16 MB, HL 1.1 / CS 1.6, or a custom pixel cap).
+  (8 MB recommended, plus 2 MB / 4 MB / 16 MB presets or a custom pixel cap).
 - Emits the exact WAD3 byte layout GoldSrc expects
   (header `"WAD3"` + 1 lump of type `'C'` + texture block + mips + palette).
 

@@ -88,10 +88,10 @@
       <div class="field">
         <label>Decal memory budget</label>
         <select id="cache">
-          <option value="2048" data-maxpx="2048">2 MB cache (Sven Co-op)</option>
-          <option value="4096" data-maxpx="4096" selected>4 MB cache (Sven Co-op)</option>
-          <option value="16384" data-maxpx="16384">16 MB cache (Sven Co-op)</option>
-          <option value="10752" data-maxpx="10752">HL 1.1 / CS 1.6 (8 MB)</option>
+          <option value="2048" data-maxpx="2048">2 MB cache</option>
+          <option value="4096" data-maxpx="4096">4 MB cache</option>
+          <option value="10752" data-maxpx="10752" selected>8 MB cache (recommended)</option>
+          <option value="16384" data-maxpx="16384">16 MB cache</option>
           <option value="custom" data-maxpx="">Custom (pixels)&hellip;</option>
         </select>
       </div>
@@ -160,8 +160,9 @@
     <p>Pick a <b>Decal memory budget</b> that matches your Sven Co-op texture cache:</p>
     <ul>
       <li><b>2 MB cache</b> &mdash; tightest fit, guaranteed to load on the smallest budget</li>
-      <li><b>4 MB cache</b> &mdash; balanced (recommended default)</li>
-      <li><b>16 MB cache</b> &mdash; crispest detail, needs the larger cache enabled</li>
+      <li><b>4 MB cache</b> &mdash; lighter budget</li>
+      <li><b>8 MB cache</b> &mdash; recommended; works on Sven Co-op</li>
+      <li><b>16 MB cache</b> &mdash; largest, only if your game supports it</li>
     </ul>
 
     <h3>Pixel-art sprays</h3>
