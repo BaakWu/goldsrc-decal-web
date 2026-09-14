@@ -100,10 +100,6 @@
         <input type="text" id="bg" placeholder="e.g. 20,20,25">
       </div>
       <div class="field">
-        <label>Decal name (max 16)</label>
-        <input type="text" id="name" value="{tempdecal">
-      </div>
-      <div class="field">
         <label>Decal memory budget</label>
         <select id="cache">
           <option value="2048" data-maxpx="2048">2 MB cache</option>
@@ -174,8 +170,8 @@
       <summary>Privacy policy</summary>
       <div class="body">
         <p><b>Last updated: 13 September 2026.</b></p>
-        <p><b>Your files stay on your device.</b> The selected image, its filename, your settings and
-           decal name, and the generated WAD and preview are processed locally in your browser. They
+        <p><b>Your files stay on your device.</b> The selected image, its filename, your settings,
+           and the generated WAD and preview are processed locally in your browser. They
            are never uploaded or sent to the site owner, Cloudflare, or GitHub.</p>
         <ul>
           <li>The app sets no cookies or persistent browser storage.</li>
@@ -283,7 +279,7 @@
     if (!loaded) return;
     $("dl").style.display = "none";
     const strategySel = $("strategy").value;
-    let name = $("name").value || "{tempdecal";
+    const name = "{tempdecal";
     const cacheSel = $("cache");
     const pxText = cacheSel.value === "custom" ? $("maxpx").value : cacheSel.selectedOptions[0].dataset.maxpx;
     const maxpx = Math.max(256, parseInt(pxText, 10) || 10752);
