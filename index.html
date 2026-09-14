@@ -219,7 +219,7 @@
   fileIn.addEventListener("change", () => { const f = fileIn.files && fileIn.files[0]; if (f) loadFile(f); fileIn.value = ""; });
   $("strategy").addEventListener("change", () => { $("bgField").style.display = $("strategy").value === "bg" ? "block" : "none"; if (loaded) build(); });
   $("cache").addEventListener("change", () => { $("customPxField").style.display = $("cache").value === "custom" ? "block" : "none"; if (loaded) build(); });
-  ["bg", "name", "maxpx"].forEach(id => $(id).addEventListener("change", () => { if (loaded) build(); }));
+  ["bg", "maxpx"].forEach(id => $(id).addEventListener("change", () => { if (loaded) build(); }));
   const openPrivacy = () => { const el = $("privacy"); if (el) el.open = true; };
   document.querySelectorAll('a[href="#privacy"]').forEach(a => a.addEventListener("click", openPrivacy));
   if (location.hash === "#privacy") openPrivacy();
